@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced Todo App - Organize your tasks efficiently">
+    <meta name="theme-color" content="#6366f1">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Todo App">
+    <link rel="apple-touch-icon" href="{% static 'assets/icons/icon-192.png' %}">
+    
+    <title>Advanced Todo App - Django Edition</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'assets/icons/favicon.png' %}">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+</head>
+<body>
+    <!-- The main app content is loaded from static/index.html via JavaScript -->
+    <div id="root"></div>
+    
+    <!-- Noscript fallback -->
+    <noscript>
+        <div style="padding: 40px; text-align: center;">
+            <h1>JavaScript Required</h1>
+            <p>This application requires JavaScript to be enabled. Please enable JavaScript in your browser settings and reload the page.</p>
+        </div>
+    </noscript>
+    
+    <!-- Load External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- Load Application JavaScript -->
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/ui.js' %}"></script>
+    <script src="{% static 'js/todos.js' %}"></script>
+    <script src="{% static 'js/charts.js' %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    
+    <!-- Load the main HTML content -->
+    <script>
+        // Load the main app HTML
+        fetch("{% static 'index.html' %}")
+            .then(response => response.text())
+            .then(html => {
+                // Extract body content
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const bodyContent = doc.body.innerHTML;
+                
+                // Insert into root
+                document.getElementById('root').innerHTML = bodyContent;
+                
+                // Trigger DOMContentLoaded for app initialization
+                window.dispatchEvent(new Event('DOMContentLoaded'));
+            })
+            .catch(error => {
+                console.error('Failed to load app:', error);
+                document.getElementById('root').innerHTML = '<div style="padding: 40px; text-align: center;"><h1>Failed to load application</h1><p>Please refresh the page to try again.</p></div>';
+            });
+    </script>
+</body>
+</html>
