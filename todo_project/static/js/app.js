@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Initialize authenticated app
 async function initializeApp() {
-    showLoading('appContainer');
+    console.log('Initializing authenticated app...');
     
     try {
         // Load all initial data in parallel
@@ -67,11 +67,10 @@ async function initializeApp() {
             // setupRealtimeHandlers();
         }
         
-        hideLoading('appContainer');
+        console.log('App initialization complete');
         
     } catch (error) {
         console.error('Failed to load app data:', error);
-        hideLoading('appContainer');
         showError('Failed to load application data');
     }
 }
@@ -203,10 +202,19 @@ function setupGlobalEventListeners() {
         profileForm.addEventListener('submit', updateProfile);
     }
     
+    // Recurring task checkbox
+    const isRecurring = document.getElementById('isRecurring');
+    if (isRecurring) {
+        isRecurring.addEventListener('change', (e) => {
+            document.getElementById('recurrenceOptions').style.display = 
+                e.target.checked ? 'block' : 'none';
+        });
+    }
+    
     // Window resize handler
     window.addEventListener('resize', debounce(() => {
-        if (productivityChart) productivityChart.resize();
-        if (categoryChart) categoryChart.resize();
+        if (window.productivityChart) window.productivityChart.resize();
+        if (window.categoryChart) window.categoryChart.resize();
     }, 250));
     
     // Online/Offline handlers
@@ -261,7 +269,7 @@ function setupKeyboardShortcuts() {
                     break;
                 case 's':
                     e.preventDefault();
-                    if (editingId) {
+                    if (window.editingId) {
                         document.getElementById('todoForm').dispatchEvent(new Event('submit'));
                     }
                     break;
@@ -276,8 +284,8 @@ function setupKeyboardShortcuts() {
                 showShortcuts();
                 break;
             case 'Escape':
-                if (editingId) {
-                    editingId = null;
+                if (window.editingId) {
+                    window.editingId = null;
                     document.getElementById('todoForm').reset();
                 }
                 break;
@@ -287,7 +295,7 @@ function setupKeyboardShortcuts() {
 
 // Delete all completed todos
 async function deleteCompleted() {
-    const completedTodos = todos.filter(t => t.completed);
+    const completedTodos = window.todos.filter(t => t.completed);
     
     if (completedTodos.length === 0) {
         showInfo('No completed tasks to delete');
@@ -343,14 +351,14 @@ function setupRealtimeHandlers() {
 let currentTodoForShare = null;
 let selectedUsersForShare = [];
 
-function showShareModal(todoId) {
+window.showShareModal = function(todoId) {
     currentTodoForShare = todoId;
     selectedUsersForShare = [];
     document.getElementById('selectedUsersList').innerHTML = '';
     showModal('shareModal');
 }
 
-async function searchUsers() {
+window.searchUsers = async function() {
     const query = document.getElementById('userSearchInput').value;
     
     if (query.length < 2) {
@@ -384,7 +392,7 @@ function renderUserSearchResults(users) {
     resultsContainer.style.display = 'block';
 }
 
-function selectUserForShare(userId, username) {
+window.selectUserForShare = function(userId, username) {
     if (selectedUsersForShare.find(u => u.id === userId)) return;
     
     selectedUsersForShare.push({ id: userId, username });
@@ -404,7 +412,7 @@ function selectUserForShare(userId, username) {
     document.getElementById('userSearchResults').style.display = 'none';
 }
 
-function removeUserFromShare(userId) {
+window.removeUserFromShare = function(userId) {
     selectedUsersForShare = selectedUsersForShare.filter(u => u.id !== userId);
     
     const selectedList = document.getElementById('selectedUsersList');
@@ -416,7 +424,7 @@ function removeUserFromShare(userId) {
     `).join('');
 }
 
-async function shareTodo() {
+window.shareTodo = async function() {
     if (!currentTodoForShare || selectedUsersForShare.length === 0) {
         showWarning('Please select at least one user to share with');
         return;
@@ -495,11 +503,6 @@ window.toggleTodo = toggleTodo;
 window.editTodo = editTodo;
 window.deleteTodo = deleteTodo;
 window.showTodoDetails = showTodoDetails;
-window.showShareModal = showShareModal;
-window.searchUsers = searchUsers;
-window.selectUserForShare = selectUserForShare;
-window.removeUserFromShare = removeUserFromShare;
-window.shareTodo = shareTodo;
 window.closeModal = closeModal;
 window.hideSuccessMessage = hideSuccessMessage;
 

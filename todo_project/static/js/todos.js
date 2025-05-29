@@ -392,6 +392,11 @@ async function bulkDelete() {
 function setupSearch() {
     const searchInput = document.getElementById('searchInput');
     
+    if (!searchInput) {
+        console.warn('Search input not found');
+        return;
+    }
+    
     searchInput.addEventListener('input', debounce(async (e) => {
         const query = e.target.value.trim();
         
@@ -419,7 +424,14 @@ function setupSearch() {
 
 // Filter Tabs
 function setupFilterTabs() {
-    document.querySelectorAll('.filter-tab').forEach(tab => {
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    
+    if (!filterTabs || filterTabs.length === 0) {
+        console.warn('Filter tabs not found');
+        return;
+    }
+    
+    filterTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');

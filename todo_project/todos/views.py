@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
-from django.db.models import Q, Count, Avg, Sum
+from django.db.models import Q, Count, Avg, Sum, F  # Added F here
 from django.utils import timezone
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes, action
@@ -23,7 +23,6 @@ from .serializers import (
     ActivityLogSerializer, TodoTemplateSerializer,
     UserRegistrationSerializer, UserUpdateSerializer
 )
-from todos import models
 
 # Serve the main app
 def index(request):
@@ -393,7 +392,7 @@ def get_statistics(request):
         completed=True,
         completed_at__isnull=False
     ).annotate(
-        completion_time=models.F('completed_at') - models.F('created_at')
+        completion_time=F('completed_at') - F('created_at')
     ).aggregate(
         avg_time=Avg('completion_time')
     )['avg_time']

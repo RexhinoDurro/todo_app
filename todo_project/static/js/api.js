@@ -46,12 +46,15 @@ class ApiClient {
     
     // GET request
     async get(endpoint, params = {}) {
-        const url = new URL(`${API_BASE}${endpoint}`);
+        const fullUrl = `${window.location.origin}${API_BASE}${endpoint}`;
+        const url = new URL(fullUrl);
+        
         Object.keys(params).forEach(key => {
             if (params[key] !== null && params[key] !== undefined) {
                 url.searchParams.append(key, params[key]);
             }
         });
+        
         return this.request(url.toString());
     }
     
